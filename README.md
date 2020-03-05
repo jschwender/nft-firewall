@@ -18,3 +18,9 @@ nft -f /etc/firewall
 More information
 ----------------
 Have a look at netfilter.org and wiki.nftables.org
+
+General warning
+---------------
+A firewall must generally be tuned to your requirement, thread environment, local servides, network speed and so on. This one should be usable with minimum adjustments. You don't need to be an IP guru to adjust this, but you should be able to understand a minimum of the protocol suites: IP, TCP, UDP, IGMP, ARP, which are the usual ones in private networks. Computer security is never like "click here - done" even though commercial app providers repetitive tell that legend.
+
+Don't expect miracles from the implemented flooding protection. A bot net attack will flood your network connection and there is no way you can stop that on your end. This firewall just minimizes the CPU load under an attack, which is still important in terms of security.
