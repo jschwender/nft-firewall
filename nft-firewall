@@ -45,13 +45,13 @@ table inet MainTable {
       tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|ack|urg     drop      # bogus flags
       tcp flags & (fin|syn|rst|psh|ack|urg) == 0x0                     drop      # bogus flags
       tcp flags & (fin|syn|rst|ack) != syn ct state new                drop      # bogus flags
+      ct state invalid drop
    }
 ################## Incoming Traffic ##########################
    chain incoming {
       type filter hook input priority 1; policy drop;
 
       iif lo accept                           # Allow loopback interface, should be ok.
-      ct state invalid drop
 # add source ip addresses with timeout to the backlist if more than 10 tcp connection requests occured per second and ip address.
 # entries will timeout after given time, after which they might be re-added if limit condition persists.
       tcp dport ssh   ct state new,untracked meter flood-ipv4-ssh  { ip saddr timeout 10s limit rate over 10/second }  add @blacklist-v4 { ip saddr timeout 1m }
