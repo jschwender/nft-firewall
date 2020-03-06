@@ -50,13 +50,13 @@ table inet MainTable {
    chain incoming {
       type filter hook input priority 1; policy drop;
 
-      ct state invalid log drop               # Drop invalid connections, generally good idea.
+      ct state invalid log prefix "invalid:" drop               # Drop invalid connections, generally good idea.
       iif lo accept                           # Allow loopback interface, should be ok.
 # add source ip addresses with timeout to the backlist if more than 10 tcp connection requests occured per second and ip address.
 # entries will timeout after given time, after which they might be re-added if limit condition persists.
       tcp dport ssh   ct state new,untracked meter flood-ipv4-ssh  { ip saddr timeout 10s limit rate over 10/second }  add @blacklist-v4 { ip saddr timeout 1m }
-      ct state new,untracked meter flood-ipv4-rest { ip  saddr timeout 10s limit rate over 100/second } add @blacklist-v4 { ip  saddr timeout 2m }
-      ct state new,untracked meter flood-ip6       { ip6 saddr timeout 10s limit rate over 100/second } add @blacklist-v6 { ip6 saddr timeout 3m }
+      ct state new,untracked meter flood-ipv4-rest { ip  saddr timeout 10s limit rate over 1000/second } add @blacklist-v4 { ip  saddr timeout 2m }
+      ct state new,untracked meter flood-ip6       { ip6 saddr timeout 10s limit rate over 1000/second } add @blacklist-v6 { ip6 saddr timeout 3m }
 # if an IP is on the blacklist list we drop ALL packets from this ip, not only the "new" packets. That would happen if drop was in the rules above.
       ip  saddr @blacklist-v4  log prefix "new ratev4 exceeded:" drop
       ip6 saddr @blacklist-v6  log prefix "new ratev6 exceeded:" drop    # set references cannot be combined in another set, so separate rules are required
